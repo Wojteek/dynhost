@@ -1,0 +1,152 @@
+name: App
+
+on:
+  push:
+    tags: v*
+    paths:
+      - .github/workflows/publish.yml
+      - build/builder/**
+      - cmd/**
+      - internal/**
+      - go.mod
+      - go.sum
+      - .goreleaser.yml
+
+jobs:
+  prepare:
+    name: Store the data
+    runs-on: ubuntu-latest
+    steps:
+      - shell: bash
+        run: |
+          echo "DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> .env
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo "VERSION=${GITHUB_REF}" >> .env
+          else
+            echo "VERSION=v${GITHUB_SHA::8}-prerelease" >> .env
+          fi
+    
+      - name: Upload the build data
+        uses: actions/upload-artifact@v1
+        with:
+          name: build-data
+          path: .env
+          
+  release:
+    name: Create the release
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        
+      - name: Unshallow
+        run: git fetch --prune --unshallow  
+        
+      - name: Download the build data
+        uses: actions/download-artifact@v1
+        with:
+          name: build-data
+        
+      - id: define-variables
+        name: Define the variables
+        run: |
+          export $(cat build-data/.env | xargs)
+          echo ::set-output name=DATE::$DATE
+          echo ::set-output name=VERSION::$VERSION
+          
+      - id: go
+        name: Set up Go 1.14.1
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14.1
+          
+      - name: Run GoReleaser
+        uses: goreleaser/goreleaser-action@v1
+        with:
+          version: latest
+          args: release --rm-dist --snapshot
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DATE: ${{ steps.define-variables.outputs.DATE }}
+
+      - name: Release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.define-variables.outputs.VERSION }}
+          prerelease: true
+          files: |
+            dist/*.zip
+            dist/*.tar.gz
+            dist/*_checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  docker-image:
+    name: Publish on the registry
+    needs: [prepare]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+        
+      - name: Download the build data
+        uses: actions/download-artifact@v1
+        with:
+          name: build-data        
+
+      - id: define-variables
+        name: Define the variables
+        run: |
+          export $(cat build-data/.env | xargs)
+          echo ::set-output name=DOCKER_PLATFORMS::linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64
+          echo ::set-output name=DOCKER_IMAGE::${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }} 
+          echo ::set-output name=DATE::$DATE
+          echo ::set-output name=COMMIT::${GITHUB_SHA::8}
+          echo ::set-output name=VERSION::${VERSION#v}
+          echo ::set-output name=VCS_URL::https://github.com/${GITHUB_REPOSITORY}
+          
+      - id: go
+        name: Set up Go 1.14.1
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14.1
+
+      - id: buildx
+        name: Set up Docker Buildx
+        uses: crazy-max/ghaction-docker-buildx@v1
+        with:
+          version: latest
+
+      - name: Build an application wthout release
+        if: success()
+        run: |
+          docker buildx build \
+            --output "type=image,push=false" \
+            --platform ${{ steps.define-variables.outputs.DOCKER_PLATFORMS }} \
+            --build-arg "DATE=${{ steps.define-variables.outputs.DATE }}" \
+            --build-arg "COMMIT=${{ steps.define-variables.outputs.COMMIT }}" \
+            --build-arg "VERSION=${{ steps.define-variables.outputs.VERSION }}" \
+            --build-arg "VCS_URL=${{ steps.define-variables.outputs.VCS_URL }}" \
+            --tag "${{ steps.define-variables.outputs.DOCKER_IMAGE }}:${{ steps.define-variables.outputs.VERSION }}" \
+            --file ./build/builder/Dockerfile .
+        
+      - id: docker-login
+        name: Docker login
+        if: success()
+        run: |
+          echo "${{ secrets.DOCKER_PASSWORD }}" | docker login --username "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and release an application
+        if: success()
+        run: |
+          docker buildx build --platform ${{ steps.define-variables.outputs.DOCKER_PLATFORMS }} \
+            --output "type=image,push=true" \
+            --build-arg "DATE=${{ steps.define-variables.outputs.DATE }}" \
+            --build-arg "COMMIT=${{ steps.define-variables.outputs.COMMIT }}" \
+            --build-arg "VERSION=${{ steps.define-variables.outputs.VERSION }}" \
+            --build-arg "VCS_URL=${{ steps.define-variables.outputs.VCS_URL }}" \
+            --tag "${{ steps.define-variables.outputs.DOCKER_IMAGE }}:${{ steps.define-variables.outputs.VERSION }}" \
+            --tag "${{ steps.define-variables.outputs.DOCKER_IMAGE }}:latest" \
+            --file ./build/builder/Dockerfile .

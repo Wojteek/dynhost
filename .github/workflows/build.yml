@@ -1,0 +1,23 @@
+name: Go
+
+on: [push]
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2        
+      
+      - name: Set up Go 1.14.1
+        uses: actions/setup-go@v1
+        with:
+          go-version: 1.14.1
+        id: go
+      
+      - run: make install-golint
+      
+      - run: make lint
+      
+      - run: make build-app
