@@ -1,6 +1,9 @@
 # DynHost<!-- omit in toc -->
-![](https://github.com/Wojteek/dynhost/workflows/Build/badge.svg)
-![](https://images.microbadger.com/badges/image/wojteek/dynhost.svg)
+[![](https://img.shields.io/github/workflow/status/Wojteek/dynhost/Go?style=for-the-badge)](https://github.com/Wojteek/dynhost/)
+[![](https://img.shields.io/docker/image-size/wojteek/dynhost/latest?style=for-the-badge)](https://hub.docker.com/r/wojteek/dynhost)
+[![](https://img.shields.io/docker/pulls/wojteek/dynhost?style=for-the-badge)](https://hub.docker.com/r/wojteek/dynhost)
+[![](https://img.shields.io/docker/v/wojteek/dynhost/latest?style=for-the-badge&label=DockerHub)](https://hub.docker.com/r/wojteek/dynhost)
+[![](https://img.shields.io/github/license/Wojteek/dynhost?style=for-the-badge)](https://github.com/Wojteek/dynhost/)
 
 > The simplest tool for fetching and saving the external IP address in the DNS record of your own domain. It supports the OVH and Cloudflare.
 
