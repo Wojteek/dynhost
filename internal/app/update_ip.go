@@ -15,6 +15,10 @@ func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
 		data, _ := GetData(p.DataPath)
 		externalIP := strings.TrimSpace(string(ip.NewExternalIP().IP()))
 
+		if len(externalIP) == 0 {
+			return nil
+		}
+
 		if externalIP == data.LastIP {
 			return nil
 		}
