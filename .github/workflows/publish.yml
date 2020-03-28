@@ -21,7 +21,7 @@ jobs:
         run: |
           echo "DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> .env
           if [[ $GITHUB_REF == refs/tags/* ]]; then
-            echo "VERSION=${GITHUB_REF}" >> .env
+            echo "VERSION=${GITHUB_REF#refs/tags/v}" >> .env
           else
             echo "VERSION=v${GITHUB_SHA::8}-prerelease" >> .env
           fi
@@ -65,7 +65,7 @@ jobs:
         uses: goreleaser/goreleaser-action@v1
         with:
           version: latest
-          args: release --rm-dist --snapshot
+          args: release --rm-dist
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATE: ${{ steps.define-variables.outputs.DATE }}

@@ -3,3 +3,4 @@ data.json
 .idea/
 .DS_Store
 bin/
+build-data
