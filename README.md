@@ -13,6 +13,7 @@
   - [Docker (recommended)](#docker-recommended)
     - [docker-compose.yml](#docker-composeyml)
   - [Building from the source](#building-from-the-source)
+- [Global options](#global-options)
 - [List of all commands](#list-of-all-commands)
     - [`cloudflare [command options] [arguments...]` - Cloudflare provider](#cloudflare-command-options-arguments---cloudflare-provider)
     - [`ovh [command options] [arguments...]` - OVH provider](#ovh-command-options-arguments---ovh-provider)
@@ -50,12 +51,12 @@ services:
   dynhost:
     image: wojteek/dynhost:latest
     command: [
+      "--timer=15m",
       "cloudflare",
       "--auth-token=YOUR_AUTH_TOKEN",
       "--zone-id=YOUR_ZONE_ID",
       "--dns-id=YOUR_DNS_ID",
       "--hostname=dynhost.example.com",
-      "--timer=15m"
     ]
     container_name: "dynhost"
     restart: always
@@ -71,6 +72,16 @@ In order to build this tool you can just run:
 make build-app
 ```
 
+## Global options
+
+```
+--data value    Set the path of the JSON file with the data of an application (default: "data.json")
+--timer value   Set the interval between automatic checking of an external IP address (default: 0s)
+--debug         Enable the debug mode (default: false)
+--help, -h      Show help (default: false)
+--version, -v   Print the version (default: false)
+```
+
 ## List of all commands
 
 #### `cloudflare [command options] [arguments...]` - Cloudflare provider
@@ -83,8 +94,6 @@ make build-app
 --zone-id value     The zone identifier (Cloudflare DNS)
 --dns-id value      The dns identifier (Cloudflare DNS)
 --hostname value    The hostname (Cloudflare DNS)
---data value        Set the path of the JSON file with the data of an application (default: "data.json")
---timer value       Set the interval between automatic checking of an external IP address (default: 0s)
 ```
  
 #### `ovh [command options] [arguments...]` - OVH provider
@@ -96,8 +105,6 @@ Visit [the documentation](https://docs.ovh.com/gb/en/domains/hosting_dynhost/) i
 --auth-username value  The username of the DynHost option
 --auth-password value  The password of the DynHost option
 --hostname value       The hostname of the DynHost option
---data value           Set the path of the JSON file with the data of an application (default: "data.json")
---timer value          Set the interval between automatic checking of an external IP address (default: 0s)
 ```
 
 ## Auto start
