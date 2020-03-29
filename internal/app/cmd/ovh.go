@@ -40,8 +40,8 @@ func OVHCommand() *cli.Command {
 			},
 		},
 		Action: func(ctx *cli.Context) error {
-			authUsername := ctx.String("auth-authUsername")
-			authPassword := ctx.String("auth-authPassword")
+			authUsername := ctx.String("auth-username")
+			authPassword := ctx.String("auth-password")
 			hostname := ctx.String("hostname")
 			dataPath := ctx.String("data")
 
