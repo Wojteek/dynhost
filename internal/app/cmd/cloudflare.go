@@ -18,21 +18,25 @@ func CloudflareCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:     "auth-token",
 				Usage:    "The authentication token of the Cloudflare API",
+				EnvVars:  []string{"CLOUDFLARE_AUTH_TOKEN"},
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:     "zone-id",
 				Usage:    "The zone identifier (Cloudflare DNS)",
+				EnvVars:  []string{"CLOUDFLARE_ZONE_ID"},
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:     "dns-id",
 				Usage:    "The dns identifier (Cloudflare DNS)",
+				EnvVars:  []string{"CLOUDFLARE_DNS_ID"},
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:     "hostname",
 				Usage:    "The hostname (Cloudflare DNS)",
+				EnvVars:  []string{"CLOUDFLARE_HOSTNAME"},
 				Required: true,
 			},
 		},

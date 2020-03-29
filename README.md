@@ -90,10 +90,10 @@ make build-app
 
 **Options**
 ```
---auth-token value  The authentication token of the Cloudflare API
---zone-id value     The zone identifier (Cloudflare DNS)
---dns-id value      The dns identifier (Cloudflare DNS)
---hostname value    The hostname (Cloudflare DNS)
+--auth-token value  The authentication token of the Cloudflare API [$CLOUDFLARE_AUTH_TOKEN]
+--zone-id value     The zone identifier (Cloudflare DNS) [$CLOUDFLARE_ZONE_ID]
+--dns-id value      The dns identifier (Cloudflare DNS) [$CLOUDFLARE_DNS_ID]
+--hostname value    The hostname (Cloudflare DNS) [$CLOUDFLARE_HOSTNAME]
 ```
  
 #### `ovh [command options] [arguments...]` - OVH provider
@@ -102,9 +102,9 @@ Visit [the documentation](https://docs.ovh.com/gb/en/domains/hosting_dynhost/) i
 
 **Options**
 ```
---auth-username value  The username of the DynHost option
---auth-password value  The password of the DynHost option
---hostname value       The hostname of the DynHost option
+--auth-username value  The authentication username of the DynHost option [$OVH_AUTH_USERNAME]
+--auth-password value  The authentication password of the DynHost option [$OVH_AUTH_PASSWORD]
+--hostname value       The hostname of the DynHost option [$OVH_HOSTNAME]
 ```
 
 ## Auto start
@@ -117,7 +117,7 @@ Description="DynHost"
 
 [Service]
 User=YOUR_USER
-ExecStart=/path/to/dynhost [command options] [arguments...]
+ExecStart=/path/to/dynhost [global options] command [command options] [arguments...]
 Restart=always
 RestartSec=10s
 KillMode=process

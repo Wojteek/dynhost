@@ -18,16 +18,19 @@ func OVHCommand() *cli.Command {
 			&cli.StringFlag{
 				Name:     "auth-username",
 				Usage:    "The authentication username of the DynHost option",
+				EnvVars:  []string{"OVH_AUTH_USERNAME"},
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:     "auth-password",
 				Usage:    "The authentication password of the DynHost option",
+				EnvVars:  []string{"OVH_AUTH_PASSWORD"},
 				Required: true,
 			},
 			&cli.StringFlag{
 				Name:     "hostname",
 				Usage:    "The hostname of the DynHost option",
+				EnvVars:  []string{"OVH_HOSTNAME"},
 				Required: true,
 			},
 		},
