@@ -6,9 +6,9 @@ GO=go
 GO_INPUT=./cmd/$(APP_NAME)/main.go
 GO_OUTPUT=./bin/$(APP_NAME)
 GOLINT=$(shell $(GO) list -f {{.Target}} golang.org/x/lint/golint)
-VERSION?="0.0.0-dev"
+VERSION?="$(shell echo $(shell git describe --abbrev=0 --tags) | sed 's/^v\(.*\)/\1/g')"
 DATE?=$(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
-COMMIT?="$(shell git rev-parse --short HEAD)-dev"
+COMMIT?="$(shell git rev-parse --short HEAD)"
 
 build-app: clean
 	@echo "`date +'%d.%m.%Y %H:%M:%S'` Building $(GO_INPUT)"
