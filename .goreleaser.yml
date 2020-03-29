@@ -30,6 +30,9 @@ changelog:
     exclude:
       - '^docs:'
       - '^test:'
+      - '^chore:'
+      - '^build:'
+      - '^ci:'
       - Merge pull request
       - Merge branch
 archives:
