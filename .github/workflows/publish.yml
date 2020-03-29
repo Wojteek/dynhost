@@ -23,7 +23,7 @@ jobs:
           if [[ $GITHUB_REF == refs/tags/* ]]; then
             echo "VERSION=${GITHUB_REF#refs/tags/v}" >> .env
           else
-            echo "VERSION=v${GITHUB_SHA::8}-prerelease" >> .env
+            echo "VERSION=v${GITHUB_SHA::7}-prerelease" >> .env
           fi
     
       - name: Upload the build data
@@ -103,7 +103,7 @@ jobs:
           echo ::set-output name=DOCKER_PLATFORMS::linux/386,linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64
           echo ::set-output name=DOCKER_IMAGE::${{ secrets.DOCKER_USERNAME }}/${{ github.event.repository.name }} 
           echo ::set-output name=DATE::$DATE
-          echo ::set-output name=COMMIT::${GITHUB_SHA::8}
+          echo ::set-output name=COMMIT::${GITHUB_SHA::7}
           echo ::set-output name=VERSION::${VERSION#v}
           echo ::set-output name=VCS_URL::https://github.com/${GITHUB_REPOSITORY}
           
