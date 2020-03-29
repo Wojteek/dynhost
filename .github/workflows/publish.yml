@@ -70,19 +70,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DATE: ${{ steps.define-variables.outputs.DATE }}
 
-      - name: Release
-        if: success()
-        uses: softprops/action-gh-release@v1
-        with:
-          name: ${{ steps.define-variables.outputs.VERSION }}
-          prerelease: true
-          files: |
-            dist/*.zip
-            dist/*.tar.gz
-            dist/*_checksums.txt
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  
   docker-image:
     name: Publish on the registry
     needs: [prepare]
