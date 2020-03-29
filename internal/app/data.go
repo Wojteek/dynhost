@@ -8,8 +8,8 @@ import (
 
 // Data - the structure of file with the data
 type Data struct {
-	LastIP    string    `json:"last_ip"`
-	PrevIP    string    `json:"prev_ip"`
+	CurrentIP string    `json:"current_ip"`
+	PrevIP    string    `json:"previous_ip"`
 	ChangedAt time.Time `json:"changed_at"`
 }
 

@@ -2,7 +2,7 @@ package app
 
 import (
 	"github.com/Wojteek/dynhost/internal/app/ip"
-	"log"
+	log "github.com/sirupsen/logrus"
 	"strings"
 	"time"
 )
@@ -10,8 +10,6 @@ import (
 // UpdateIP fetches and updates the IP when the IP was changed
 func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
 	return func() error {
-		log.Println("Checking an external IP address...")
-
 		data, _ := GetData(p.DataPath)
 		externalIP := strings.TrimSpace(string(ip.NewExternalIP().IP()))
 
@@ -19,7 +17,7 @@ func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
 			return nil
 		}
 
-		if externalIP == data.LastIP {
+		if externalIP == data.CurrentIP {
 			return nil
 		}
 
@@ -28,8 +26,8 @@ func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
 		}
 
 		var d interface{} = &Data{
-			LastIP:    externalIP,
-			PrevIP:    data.LastIP,
+			CurrentIP: externalIP,
+			PrevIP:    data.CurrentIP,
 			ChangedAt: time.Now(),
 		}
 
@@ -37,7 +35,10 @@ func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
 			return err
 		}
 
-		log.Printf("The IP address has been changed: %s - before: %s", externalIP, data.LastIP)
+		log.WithFields(log.Fields{
+			"current_ip":  externalIP,
+			"previous_ip": data.CurrentIP,
+		}).Info("The IP address has been changed")
 
 		return nil
 	}

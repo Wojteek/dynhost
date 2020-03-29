@@ -1,7 +1,7 @@
 package ip
 
 import (
-	"log"
+	log "github.com/sirupsen/logrus"
 )
 
 // Providers - the structure of the providers for fetching the external IP address
@@ -37,12 +37,16 @@ func NewExternalIP() *ExternalIP {
 // IP gets the external IP address
 func (e *ExternalIP) IP() []byte {
 	for _, provider := range e.providers {
-		log.Printf("Requesting to: %s", provider.url)
+		log.WithFields(log.Fields{
+			"provider": provider.name,
+		}).Debug("Checking an external IP address")
 
 		currentIP, err := request(provider.url)
 
 		if err != nil {
-			log.Printf("Error %s@provider: %s", provider.name, err)
+			log.WithFields(log.Fields{
+				"provider": provider.name,
+			}).Error(err)
 
 			continue
 		}

@@ -1,10 +1,9 @@
-package provider
+package service
 
 import (
 	"encoding/base64"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 )
@@ -34,14 +33,14 @@ func (o *OVH) UpdateRecordRequest() ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://www.ovh.com/nic/update?%s", params.Encode()), nil)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", o.Credentials.Username, o.Credentials.Password)))))
 	resp, err := client.Do(req)
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	defer resp.Body.Close()
