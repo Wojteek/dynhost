@@ -14,7 +14,9 @@ func Timer(timer time.Duration, fn func() error) {
 
 loop:
 	for {
-		_ = fn()
+		if err := fn(); err != nil {
+			log.Fatal(err)
+		}
 
 		select {
 		case <-done:

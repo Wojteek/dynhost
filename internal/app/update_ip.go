@@ -8,7 +8,7 @@ import (
 )
 
 // UpdateIP fetches and updates the IP when the IP was changed
-func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
+func UpdateIP(p *ServiceCommand, IPChangedFn IPChangedCallback) func() error {
 	return func() error {
 		data, _ := GetData(p.DataPath)
 		externalIP := strings.TrimSpace(string(ip.NewExternalIP().IP()))
@@ -21,8 +21,8 @@ func UpdateIP(p *ProcessCommand, ChangedIPFn ChangedIPCallback) func() error {
 			return nil
 		}
 
-		if err := ChangedIPFn(externalIP); err != nil {
-			log.Fatal(err)
+		if err := IPChangedFn(externalIP); err != nil {
+			return err
 		}
 
 		var d interface{} = &Data{

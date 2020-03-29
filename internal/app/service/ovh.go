@@ -3,9 +3,11 @@ package service
 import (
 	"encoding/base64"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"regexp"
 )
 
 // CredentialsOVH is a structure of credentials in OVH
@@ -37,15 +39,27 @@ func (o *OVH) UpdateRecordRequest() ([]byte, error) {
 	}
 
 	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", o.Credentials.Username, o.Credentials.Password)))))
-	resp, err := client.Do(req)
+	r, err := client.Do(req)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer resp.Body.Close()
+	defer func(r io.ReadCloser) {
+		if errReq := r.Close(); errReq != nil {
+			err = errReq
+		}
+	}(r.Body)
 
-	body, err := ioutil.ReadAll(resp.Body)
+	if err := r.Header.Get("WWW-Authenticate"); r.StatusCode == http.StatusUnauthorized {
+		return nil, fmt.Errorf("OVH [%d]: %s", r.StatusCode, err)
+	}
 
-	return body, err
+	resp, err := ioutil.ReadAll(r.Body)
+
+	if re := regexp.MustCompile(`nochg .*?`); !re.MatchString(string(resp)) {
+		return nil, fmt.Errorf("OVH response: %s", resp)
+	}
+
+	return resp, err
 }

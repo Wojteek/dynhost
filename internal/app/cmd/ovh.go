@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/Wojteek/dynhost/internal/app"
 	"github.com/Wojteek/dynhost/internal/app/service"
-	log "github.com/sirupsen/logrus"
 	"github.com/urfave/cli/v2"
 )
 
@@ -60,12 +59,7 @@ func OVHCommand() *cli.Command {
 			dataPath := ctx.String("data")
 			timer := ctx.Duration("timer")
 
-			processCommand := &app.ProcessCommand{
-				DataPath: dataPath,
-				Timer:    timer,
-			}
-
-			var changedIPCallback app.ChangedIPCallback = func(currentIP string) error {
+			var IPChangedCallback app.IPChangedCallback = func(currentIP string) error {
 				r := service.OVH{
 					IP:       currentIP,
 					Hostname: hostname,
@@ -81,18 +75,12 @@ func OVHCommand() *cli.Command {
 
 				return nil
 			}
-			var updateIP = app.UpdateIP(processCommand, changedIPCallback)
 
-			log.WithFields(log.Fields{
-				"service": "ovh",
-				"timer":   timer,
-			}).Info("The DynHost is running")
-
-			if timer == 0 {
-				_ = updateIP()
-			} else {
-				app.Timer(timer, updateIP)
+			s := &app.ServiceCommand{
+				DataPath: dataPath,
+				Timer:    timer,
 			}
+			s.Execute("ovh", IPChangedCallback)
 
 			return nil
 		},
