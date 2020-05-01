@@ -55,11 +55,10 @@ jobs:
           echo ::set-output name=DATE::$DATE
           echo ::set-output name=VERSION::$VERSION
           
-      - id: go
-        name: Set up Go 1.14.1
-        uses: actions/setup-go@v1
+      - name: Set up Go
+        uses: actions/setup-go@v2
         with:
-          go-version: 1.14.1
+          go-version: 1.14.2
           
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v1
@@ -94,12 +93,6 @@ jobs:
           echo ::set-output name=VERSION::${VERSION#v}
           echo ::set-output name=VCS_URL::https://github.com/${GITHUB_REPOSITORY}
           
-      - id: go
-        name: Set up Go 1.14.1
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.14.1
-
       - id: buildx
         name: Set up Docker Buildx
         uses: crazy-max/ghaction-docker-buildx@v1

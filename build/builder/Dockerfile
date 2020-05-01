@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM --platform=$BUILDPLATFORM golang:1.14.1-alpine3.11 as builder
+FROM --platform=$BUILDPLATFORM golang:1.14.2-alpine3.11 as builder
 
 ARG TARGETOS
 ARG TARGETARCH
