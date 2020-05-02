@@ -1,11 +1,21 @@
-# DynHost<!-- omit in toc -->
+<span align="center">
+
+![](docs/dynhost.gif)
+
+<h3>DynHost</h3>
+<p>The simplest tool for fetching and saving the external IP address in the DNS record of your own domain. It supports the OVH and Cloudflare.</p>
+</span>
+
+---
+<span align="center">
+
 [![](https://img.shields.io/github/workflow/status/Wojteek/dynhost/Go?style=for-the-badge)](https://github.com/Wojteek/dynhost/)
 [![](https://img.shields.io/docker/image-size/wojteek/dynhost/latest?style=for-the-badge)](https://hub.docker.com/r/wojteek/dynhost)
 [![](https://img.shields.io/docker/pulls/wojteek/dynhost?style=for-the-badge)](https://hub.docker.com/r/wojteek/dynhost)
 [![](https://img.shields.io/docker/v/wojteek/dynhost/latest?style=for-the-badge&label=DockerHub)](https://hub.docker.com/r/wojteek/dynhost)
 [![](https://img.shields.io/github/license/Wojteek/dynhost?style=for-the-badge)](https://github.com/Wojteek/dynhost/)
 
-> The simplest tool for fetching and saving the external IP address in the DNS record of your own domain. It supports the OVH and Cloudflare.
+</span>
 
 - [Motivation](#motivation)
 - [Use case](#use-case)
