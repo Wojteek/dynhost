@@ -1,7 +1,6 @@
 package ip
 
 import (
-	"io"
 	"io/ioutil"
 	"net/http"
 	"time"
@@ -23,11 +22,7 @@ func request(url string) ([]byte, error) {
 		return nil, err
 	}
 
-	defer func(r io.ReadCloser) {
-		if errReq := r.Close(); errReq != nil {
-			err = errReq
-		}
-	}(r.Body)
+	defer r.Body.Close()
 
 	return ioutil.ReadAll(r.Body)
 }

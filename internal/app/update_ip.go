@@ -3,7 +3,6 @@ package app
 import (
 	"github.com/Wojteek/dynhost/internal/app/ip"
 	log "github.com/sirupsen/logrus"
-	"strings"
 	"time"
 )
 
@@ -11,7 +10,7 @@ import (
 func UpdateIP(p *ServiceCommand, IPChangedFn IPChangedCallback) func() error {
 	return func() error {
 		data, _ := GetData(p.DataPath)
-		externalIP := strings.TrimSpace(string(ip.NewExternalIP().IP()))
+		externalIP := ip.NewExternalIP().IP()
 
 		if len(externalIP) == 0 {
 			return nil
@@ -25,13 +24,13 @@ func UpdateIP(p *ServiceCommand, IPChangedFn IPChangedCallback) func() error {
 			return err
 		}
 
-		var d interface{} = &Data{
+		d := &Data{
 			CurrentIP: externalIP,
 			PrevIP:    data.CurrentIP,
 			ChangedAt: time.Now(),
 		}
 
-		if _, err := d.(*Data).SaveData(p.DataPath); err != nil {
+		if _, err := d.SaveData(p.DataPath); err != nil {
 			return err
 		}
 

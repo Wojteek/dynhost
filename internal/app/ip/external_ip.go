@@ -2,6 +2,7 @@ package ip
 
 import (
 	log "github.com/sirupsen/logrus"
+	"net"
 )
 
 // Providers - the structure of the providers for fetching the external IP address
@@ -35,13 +36,13 @@ func NewExternalIP() *ExternalIP {
 }
 
 // IP gets the external IP address
-func (e *ExternalIP) IP() []byte {
+func (e *ExternalIP) IP() string {
 	for _, provider := range e.providers {
 		log.WithFields(log.Fields{
 			"provider": provider.name,
 		}).Debug("Checking an external IP address")
 
-		currentIP, err := request(provider.url)
+		responseProvider, err := request(provider.url)
 
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -51,8 +52,19 @@ func (e *ExternalIP) IP() []byte {
 			continue
 		}
 
-		return currentIP
+		currentIP := net.ParseIP(string(responseProvider))
+
+		if currentIP == nil {
+			log.WithFields(log.Fields{
+				"provider": provider.name,
+				"response": responseProvider,
+			}).Error("The IP address has invalid format")
+
+			continue
+		}
+
+		return currentIP.String()
 	}
 
-	return nil
+	return ""
 }

@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/base64"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -38,18 +37,20 @@ func (o *OVH) UpdateRecordRequest() ([]byte, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Authorization", fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", o.Credentials.Username, o.Credentials.Password)))))
+	credentials := []byte(fmt.Sprintf("%s:%s", o.Credentials.Username, o.Credentials.Password))
+
+	req.Header.Add(
+		"Authorization",
+		fmt.Sprintf("Basic %s", base64.StdEncoding.EncodeToString(credentials)),
+	)
+
 	r, err := client.Do(req)
 
 	if err != nil {
 		return nil, err
 	}
 
-	defer func(r io.ReadCloser) {
-		if errReq := r.Close(); errReq != nil {
-			err = errReq
-		}
-	}(r.Body)
+	defer r.Body.Close()
 
 	if err := r.Header.Get("WWW-Authenticate"); r.StatusCode == http.StatusUnauthorized {
 		return nil, fmt.Errorf("OVH [%d]: %s", r.StatusCode, err)

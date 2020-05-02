@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 )
@@ -72,6 +71,7 @@ func (c *Cloudflare) UpdateRecordRequest() ([]byte, error) {
 	}
 
 	body, err := c.sendRequest(data)
+
 	var payload CFRequestUpdatePayload
 
 	if err := json.Unmarshal(body, &payload); err != nil {
@@ -101,11 +101,7 @@ func (c *Cloudflare) sendRequest(data []byte) ([]byte, error) {
 		return nil, err
 	}
 
-	defer func(r io.ReadCloser) {
-		if errReq := r.Close(); errReq != nil {
-			err = errReq
-		}
-	}(r.Body)
+	defer r.Body.Close()
 
 	return ioutil.ReadAll(r.Body)
 }
